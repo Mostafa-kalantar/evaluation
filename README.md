@@ -41,12 +41,17 @@ npm run build
 composer install
 ```
 
-4. Prepare database (create if not exists, run migrations, import data):
+4. Rename .env.example to .env
+```bash
+mv .env.example .env
+```
+
+5. Prepare database (create if not exists, run migrations, import data):
 ```bash
 php artisan db:prepare
 ```
 
-5. Run the PHP server:
+6. Run the PHP server:
 ```bash
 php artisan serve
 ```
