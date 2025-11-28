@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "scope_id": null,
+        "first_name": null,
+        "last_name": null,
+        "username": "admin",
+        "password": "$2y$12$2GyCQQAide3Kaq1FqpptuOPUkvnh5tPZosyJcoHgTalYJ2ie/dTmi"
+    },
+    {
+        "id": 2,
+        "scope_id": 1,
+        "first_name": null,
+        "last_name": null,
+        "username": "user",
+        "password": "$2y$12$qlUrv7vJrQ2MQzOOZ2H63ur9kJ.mxto4FwNTp757V1askxXWizIaS"
+    },
+    {
+        "id": 3,
+        "scope_id": 2,
+        "first_name": null,
+        "last_name": null,
+        "username": "user2",
+        "password": "$2y$12$qlUrv7vJrQ2MQzOOZ2H63ur9kJ.mxto4FwNTp757V1askxXWizIaS"
+    }
+]

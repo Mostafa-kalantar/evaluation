@@ -1,0 +1,1034 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Evaluations API",
+        "description": "Swagger documentation for app:evaluation",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login user",
+                "operationId": "53de5e90bda11dec354cc7dd2529d268",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "user2"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "user"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful login",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "token": {
+                                                    "properties": {
+                                                        "authorization": {
+                                                            "type": "string",
+                                                            "example": "9|tcntd..."
+                                                        },
+                                                        "exp": {
+                                                            "type": "integer",
+                                                            "example": 1764936235
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "redirect_route": {
+                                                    "type": "string",
+                                                    "example": "http://localhost/evaluation/public/dashboard"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "User not found"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "The username field is required."
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/logout": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout user",
+                "description": "Invalidate the current access token and logout the user.",
+                "operationId": "70bbb49ae6ca0ac8a6a3702dce14347f",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Bearer access token",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Bearer {token}"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Logout successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out successfully"
+                                        },
+                                        "redirect_route": {
+                                            "type": "string",
+                                            "example": "http://localhost/auth"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "example": "Invalid token"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/evaluations": {
+            "get": {
+                "tags": [
+                    "Evaluations"
+                ],
+                "summary": "Get evaluations list",
+                "description": "Returns paginated list of evaluations. Requires Authorization token.",
+                "operationId": "eb3781394455b251762100432190ac6d",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Bearer Token",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Bearer {token}"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated evaluations list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "component": {
+                                            "type": "string",
+                                            "example": "Dashboard/Evaluations/Index"
+                                        },
+                                        "props": {
+                                            "properties": {
+                                                "evaluations": {
+                                                    "properties": {
+                                                        "current_page": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "data": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 3
+                                                                    },
+                                                                    "title": {
+                                                                        "type": "string",
+                                                                        "example": "user 2 scope updated"
+                                                                    },
+                                                                    "created_at": {
+                                                                        "type": "string",
+                                                                        "example": "2025-11-28 11:19:57"
+                                                                    },
+                                                                    "updated_at": {
+                                                                        "type": "string",
+                                                                        "example": "2025-11-28 11:28:04"
+                                                                    },
+                                                                    "user": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "integer",
+                                                                                "example": 3
+                                                                            },
+                                                                            "username": {
+                                                                                "type": "string",
+                                                                                "example": "user2"
+                                                                            },
+                                                                            "scope_title": {
+                                                                                "type": "string",
+                                                                                "example": "US branch"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "first_page_url": {
+                                                            "type": "string",
+                                                            "example": "http://localhost/evaluation/public/api/evaluations?page=1"
+                                                        },
+                                                        "from": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "last_page": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "last_page_url": {
+                                                            "type": "string",
+                                                            "example": "http://localhost/evaluation/public/api/evaluations?page=1"
+                                                        },
+                                                        "links": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "properties": {
+                                                                    "url": {
+                                                                        "type": "string",
+                                                                        "nullable": true
+                                                                    },
+                                                                    "label": {
+                                                                        "type": "string",
+                                                                        "example": "&laquo; Previous"
+                                                                    },
+                                                                    "page": {
+                                                                        "type": "integer",
+                                                                        "nullable": true
+                                                                    },
+                                                                    "active": {
+                                                                        "type": "boolean",
+                                                                        "example": false
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "next_page_url": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        },
+                                                        "path": {
+                                                            "type": "string",
+                                                            "example": "http://localhost/evaluation/public/api/evaluations"
+                                                        },
+                                                        "per_page": {
+                                                            "type": "integer",
+                                                            "example": 10
+                                                        },
+                                                        "prev_page_url": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        },
+                                                        "to": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "total": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "example": "/evaluation/public/api/evaluations"
+                                        },
+                                        "version": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "clearHistory": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "encryptHistory": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "example": "Invalid token"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/evaluations/{id}": {
+            "get": {
+                "tags": [
+                    "Evaluations"
+                ],
+                "summary": "Get evaluation for update",
+                "description": "Returns a single evaluation with user info for editing. Requires Authorization token.",
+                "operationId": "596550bb052444998bc2e37003eafa33",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Evaluation ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 4
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Bearer access token",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Bearer {token}"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Evaluation retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "component": {
+                                            "type": "string",
+                                            "example": "Dashboard/Evaluations/Update"
+                                        },
+                                        "props": {
+                                            "properties": {
+                                                "errors": {
+                                                    "type": "object",
+                                                    "example": []
+                                                },
+                                                "evaluation": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 4
+                                                        },
+                                                        "user_id": {
+                                                            "type": "integer",
+                                                            "example": 3
+                                                        },
+                                                        "scope_id": {
+                                                            "type": "integer",
+                                                            "example": 2
+                                                        },
+                                                        "title": {
+                                                            "type": "string",
+                                                            "example": "123"
+                                                        },
+                                                        "description": {
+                                                            "type": "string",
+                                                            "example": null,
+                                                            "nullable": true
+                                                        },
+                                                        "created_at": {
+                                                            "type": "string",
+                                                            "example": "2025-11-28T12:28:13.000000Z"
+                                                        },
+                                                        "updated_at": {
+                                                            "type": "string",
+                                                            "example": "2025-11-28T12:28:13.000000Z"
+                                                        },
+                                                        "deleted_at": {
+                                                            "type": "string",
+                                                            "example": null,
+                                                            "nullable": true
+                                                        },
+                                                        "user": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 3
+                                                                },
+                                                                "scope_id": {
+                                                                    "type": "integer",
+                                                                    "example": 2
+                                                                },
+                                                                "first_name": {
+                                                                    "type": "string",
+                                                                    "example": null,
+                                                                    "nullable": true
+                                                                },
+                                                                "last_name": {
+                                                                    "type": "string",
+                                                                    "example": null,
+                                                                    "nullable": true
+                                                                },
+                                                                "username": {
+                                                                    "type": "string",
+                                                                    "example": "user2"
+                                                                },
+                                                                "email": {
+                                                                    "type": "string",
+                                                                    "example": null,
+                                                                    "nullable": true
+                                                                },
+                                                                "email_verified_at": {
+                                                                    "type": "string",
+                                                                    "example": null,
+                                                                    "nullable": true
+                                                                },
+                                                                "created_at": {
+                                                                    "type": "string",
+                                                                    "example": null,
+                                                                    "nullable": true
+                                                                },
+                                                                "updated_at": {
+                                                                    "type": "string",
+                                                                    "example": null,
+                                                                    "nullable": true
+                                                                },
+                                                                "deleted_at": {
+                                                                    "type": "string",
+                                                                    "example": null,
+                                                                    "nullable": true
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "url": {
+                                            "type": "string",
+                                            "example": "/evaluation/public/dashboard/evaluations/update/4"
+                                        },
+                                        "version": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "clearHistory": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "encryptHistory": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "example": "Invalid token"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Evaluation not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Evaluation not found"
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Evaluations"
+                ],
+                "summary": "Update an evaluation",
+                "description": "Updates an existing evaluation. Authorization token is required.",
+                "operationId": "d9461acfc1fc9f9c01ee52534a86372e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Evaluation ID to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 4
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Bearer token",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Bearer {token}"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "test changed"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Evaluation updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "messages.success_response"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "example": "The title field is required."
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "example": "Invalid token"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Evaluation not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Evaluation not found"
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Evaluations"
+                ],
+                "summary": "Delete an evaluation",
+                "description": "Deletes an existing evaluation. Authorization token is required.",
+                "operationId": "9069d5aceb0d7a810763cd96e38ceca7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Evaluation ID to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 4
+                        }
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Bearer token",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Bearer {token}"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Evaluation deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "messages.success_response"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "example": "Invalid token"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Evaluation not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Evaluation not found"
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/evaluations/store": {
+            "post": {
+                "tags": [
+                    "Evaluations"
+                ],
+                "summary": "Create new evaluation",
+                "description": "Creates a new evaluation. Authorization token is required.",
+                "operationId": "6c3cd65fd144cbe36168899a1bb4302b",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "Bearer token",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Bearer {token}"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "test"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Evaluation created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "messages.success_response"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "example": "The title field is required."
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        },
+                                        "errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "example": "Invalid token"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        },
+        {
+            "name": "Evaluations",
+            "description": "Evaluations"
+        }
+    ]
+}

@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "title": "Main branch",
+        "description": "Users located in main branch of the department"
+    },
+    {
+        "id": 2,
+        "title": "US branch",
+        "description": "Users located in US branch"
+    }
+]
